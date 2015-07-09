@@ -35,12 +35,12 @@ public class ObservableScrollViewWithFling extends com.github.ksoichiro.android.
         mScrollChecker = new Runnable() {
             @Override
             public void run() {
-                int position = getScrollY();
+                int position = getCurrentScrollY();
                 if (mPreviousPosition - position == 0) {
                     mFlingListener.onFlingStopped();
                     removeCallbacks(mScrollChecker);
                 } else {
-                    mPreviousPosition = getScrollY();
+                    mPreviousPosition = getCurrentScrollY();
                     postDelayed(mScrollChecker, DELAY_MILLIS);
                 }
             }
@@ -48,13 +48,13 @@ public class ObservableScrollViewWithFling extends com.github.ksoichiro.android.
     }
 
     @Override
-    public void fling(int velocityY) {
-        super.fling(velocityY);
-
-        if (mFlingListener != null) {
+    public void fling(int velocityX, int velocityY) {
+        boolean fling = super.fling(velocityX, velocityY);
+        if (fling && mFlingListener != null) {
             mFlingListener.onFlingStarted();
             post(mScrollChecker);
         }
+        return fling;
     }
 
     public OnFlingListener getOnFlingListener() {
